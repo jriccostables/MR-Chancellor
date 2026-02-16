@@ -15,7 +15,7 @@ function useVoice() {
     utterance.rate = 0.82;
     utterance.pitch = 0.76;
     utterance.volume = 1.0;
-    utterance.lang = "en-GB";
+    utterance.lang = "en-US";
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
     
