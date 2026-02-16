@@ -19,8 +19,7 @@ export default function Chancellor() {
     setInput("");
     setLoading(true);
     try {
-      const key = import.meta.env.VITE_ANTHROPIC_API_KEY;
-      if (!key) throw new Error("No API key");
+      
    const res = await fetch("/api/chat", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
