@@ -12,7 +12,7 @@ function useVoice() {
     setIsSpeaking(true);
     
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.82;
+    utterance.rate = 0.95;
     utterance.pitch = 0.76;
     utterance.volume = 1.0;
     utterance.lang = "en-US";
