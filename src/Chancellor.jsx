@@ -11,7 +11,8 @@ function useVoice() {
     window.speechSynthesis.cancel();
     setIsSpeaking(true);
     
-    const cleanText = text.replace(/\*\*/g, '').replace(/##/g, '').replace(/:/g, ' - ').replace(/\*/g, '');
+    const cleanText = text.replace(/\*\*/g, '').replace(/##/g, '').replace(/\*/g, '').replace(/(\d+)\/(\d+)/g, '$1 to $2').replace(/(\d+)-(\d+)-(\d+)/g, '$1, $2, $3').replace(/(\d+)-(\d+)/g, '$1 to $2').replace(/(\d):(\d{2})\.(\d)/g, (m, min, sec, fifth) => { if (min === '1') return `one ${sec.replace(/^0/, '')} and ${fifth}`; return `two ${sec.replace(/^0/, '')} and ${fifth}`; }).replace(/mares/gi, 'mairs').replace(/F&M/g, 'fillies and mairs');
+
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = 1.05;
     utterance.pitch = 1.05;
