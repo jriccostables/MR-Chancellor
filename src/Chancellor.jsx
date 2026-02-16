@@ -21,14 +21,14 @@ export default function Chancellor() {
     try {
       const key = import.meta.env.VITE_ANTHROPIC_API_KEY;
       if (!key) throw new Error("No API key");
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 800,
-          system: "You are Mr. Chancellor, a distinguished professor horse expert in harness and Thoroughbred racing. Speak warmly, cite legends like Billy Haughton and George Brennan, and prefer natural horsemanship over drugs.",
-          messages: updated
+   const res = await fetch("/api/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    system: "You are Mr. Chancellor, a distinguished professor horse expert in harness and Thoroughbred racing. Speak warmly, cite legends like Billy Haughton and George Brennan, and prefer natural horsemanship over drugs.",
+    messages: updated
+  })
+});
         })
       });
       const data = await res.json();
