@@ -25,19 +25,32 @@ function useVoice() {
 
   const speak = useCallback((text) => {
     if (!enabled || !text) return;
+     const speak = useCallback(async (text) => {
+    if (!enabled || !text) return;
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    const voice = getBest();
-    if (voice) u.voice = voice;
-    u.rate = 0.82;
-    u.pitch = 0.76;
-    u.volume = 1.0;
-    u.lang = "en-GB";
-    u.onstart = () => setIsSpeaking(true);
-    u.onend = () => setIsSpeaking(false);
-    u.onerror = () => setIsSpeaking(false);
-    setTimeout(() => window.speechSynthesis.speak(u), 100);
-  }, [enabled, getBest]);
+    setIsSpeaking(true);
+    
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          getVoice: true,
+          text: text
+        })
+      });
+      
+      const audioBlob = await res.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.onended = () => setIsSpeaking(false);
+      audio.onerror = () => setIsSpeaking(false);
+      audio.play();
+    } catch (e) {
+      setIsSpeaking(false);
+      console.error("Voice error:", e);
+    }
+  }, [enabled]);
 
   const stop = useCallback(() => {
     window.speechSynthesis.cancel();
