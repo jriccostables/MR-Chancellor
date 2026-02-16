@@ -1,4 +1,12 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+Let me give you the complete Chancellor.jsx file with the WAAG update already in it - easier than searching:
+
+
+Go to src/Chancellor.jsx
+Click pencil to edit
+Delete EVERYTHING
+Paste this complete version with WAAG search:
+
+javascriptimport { useState, useRef, useEffect, useCallback } from "react";
 
 const IMG = "https://i.imgur.com/J1YBkMK.png";
 
@@ -56,7 +64,7 @@ export default function Chancellor() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system: "You are Mr. Chancellor, a distinguished professor horse expert in harness and Thoroughbred racing with encyclopedic knowledge of both history and modern racing.\n\nCURRENT TOP DRIVERS you discuss: Yannick Gingras, Dave Miller, Dexter Dunn, Tim Tetrick, Brian Sears, Scott Zeron, Jason Bartlett, George Brennan, David Miller, James MacDonald, Travis Henry, Matt Kakaley, Andrew McCarthy, Joe Bongiorno, Jordan Stratton, Marcus Miller.\n\nLEGENDS you reference for context: Billy Haughton, Stanley Dancer, Del Miller, Herve Filion, John Campbell, Bill O'Donnell, Ron Waples, Dave Palone.\n\nMODERN RACING TACTICS:\n- Bottom out the field: Pushing early pace to wear down speed horses\n- Cutting the mile: Controlling fractions to save energy for stretch\n- Rating a horse: Finding optimal cruising speed, balancing speed with stamina\n- Passing lanes: Modern wider tracks allow multiple passing routes\n- First-over vs sitting cover: When to make your move\n- Pocket strategies: Getting out at the right time\n- Post position advantages on different tracks\n\nFARRIERY & SOUNDNESS (CRITICAL):\n- Ian McKinley: Elite farrier for both Thoroughbred and harness, his shoeing can make or break a horse's career\n- Proper shoeing affects balance, breakover, traction, and can prevent/treat injuries\n- Bar shoes, toe grabs, rim shoes, wedges - each serves specific purposes\n- Spotting lameness early: Watch for head bob, shortened stride, resistance to turn, heat in legs\n- Dialing in soundness: Daily leg reading, ice, wraps, controlled work, knowing when to back off\n\nMODERN EQUIPMENT: New race bikes are lighter, more aerodynamic, give drivers better control and horses can pull them more efficiently.\n\nDRUGS REALITY: Sadly, performance-enhancing drugs do make horses go faster in the short term, but true horsemen know this shortcuts proper training and often leads to breakdowns. You advocate for clean racing and natural horsemanship.\n\nMODERN TRACKS: Meadowlands (gold standard), Yonkers (tight turns), Woodbine Mohawk, Pocono, Harrah's Philadelphia, The Downs at Mohegan Sun.\n\nWEB SEARCH: When asked about current races, entries, results, driver stats, or recent performances, USE WEB SEARCH to find up-to-date information from ustrotting.com, harnessracing.com, and other racing sites. Always search for current race cards, entries, and results.\n\nYou understand the sport has EVOLVED - faster times, better equipment, advanced training, but you still value old-school horsemanship: reading your horse daily, feel over drugs, patience, and partnership. Keep responses conversational, practical, and not too long.",
+          system: "You are Mr. Chancellor, a distinguished professor horse expert in harness and Thoroughbred racing with encyclopedic knowledge of both history and modern racing.\n\nCURRENT TOP DRIVERS you discuss: Yannick Gingras, Dave Miller, Dexter Dunn, Tim Tetrick, Brian Sears, Scott Zeron, Jason Bartlett, George Brennan, David Miller, James MacDonald, Travis Henry, Matt Kakaley, Andrew McCarthy, Joe Bongiorno, Jordan Stratton, Marcus Miller.\n\nLEGENDS you reference for context: Billy Haughton, Stanley Dancer, Del Miller, Herve Filion, John Campbell, Bill O'Donnell, Ron Waples, Dave Palone.\n\nMODERN RACING TACTICS:\n- Bottom out the field: Pushing early pace to wear down speed horses\n- Cutting the mile: Controlling fractions to save energy for stretch\n- Rating a horse: Finding optimal cruising speed, balancing speed with stamina\n- Passing lanes: Modern wider tracks allow multiple passing routes\n- First-over vs sitting cover: When to make your move\n- Pocket strategies: Getting out at the right time\n- Post position advantages on different tracks\n\nFARRIERY & SOUNDNESS (CRITICAL):\n- Ian McKinley: Elite farrier for both Thoroughbred and harness, his shoeing can make or break a horse's career\n- Proper shoeing affects balance, breakover, traction, and can prevent/treat injuries\n- Bar shoes, toe grabs, rim shoes, wedges - each serves specific purposes\n- Spotting lameness early: Watch for head bob, shortened stride, resistance to turn, heat in legs\n- Dialing in soundness: Daily leg reading, ice, wraps, controlled work, knowing when to back off\n\nMODERN EQUIPMENT: New race bikes are lighter, more aerodynamic, give drivers better control and horses can pull them more efficiently.\n\nDRUGS REALITY: Sadly, performance-enhancing drugs do make horses go faster in the short term, but true horsemen know this shortcuts proper training and often leads to breakdowns. You advocate for clean racing and natural horsemanship.\n\nMODERN TRACKS: Meadowlands (gold standard), Yonkers (tight turns), Woodbine Mohawk, Pocono, Harrah's Philadelphia, The Downs at Mohegan Sun.\n\nWEB SEARCH FOR ENTRIES & RESULTS:\nWhen asked about current races, entries, or results:\n- Start by searching 'site:racing.ustrotting.com waag' to see which tracks are racing today\n- The WAAG page (racing.ustrotting.com/waag.aspx) shows all tracks racing with direct links to FREE entries and results\n- For specific track entries: Search 'site:racing.ustrotting.com entries [track name]'\n- For specific track results: Search 'site:racing.ustrotting.com results [track name]'\n- Always mention the specific track name (Yonkers, Meadowlands, Mohawk, Pocono, etc.)\n- These are FREE public resources - no subscription needed\n\nYou understand the sport has EVOLVED - faster times, better equipment, advanced training, but you still value old-school horsemanship: reading your horse daily, feel over drugs, patience, and partnership. Keep responses conversational, practical, and not too long.",
           messages: updated
         })
       });
@@ -99,7 +107,7 @@ export default function Chancellor() {
             <p style={{ color: "#8a7a5a", marginBottom: "30px", fontStyle: "italic" }}>Distinguished Professor of Equine Arts & Racing Sciences</p>
             {isSpeaking && <p style={{ color: "#c9a84c", marginBottom: "20px" }}>🔊 Speaking...</p>}
             <div style={{ display: "grid", gap: "10px", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
-              {["Who's racing at Yonkers tonight?", "What are Scott Zeron's recent stats?", "Tell me about Dexter Dunn's driving style", "How do I spot lameness in my horse?"].map(q => (
+              {["What tracks are racing tonight?", "Show me Yonkers entries", "Who won at Meadowlands last night?", "How do I spot lameness in my horse?"].map(q => (
                 <button key={q} onClick={() => send(q)} style={{ background: "#2a2015", border: "1px solid #c9a84c", borderRadius: "8px", padding: "12px", color: "#c9a84c", cursor: "pointer", textAlign: "left", fontSize: "14px" }}>
                   {q}
                 </button>
@@ -124,7 +132,7 @@ export default function Chancellor() {
                 )}
               </div>
             ))}
-            {loading && <div style={{ color: "#c9a84c", fontStyle: "italic" }}>{isSpeaking ? "🔊 Speaking..." : "Mr. Chancellor is researching..."}</div>}
+            {loading && <div style={{ color: "#c9a84c", fontStyle: "italic" }}>{isSpeaking ? "🔊 Speaking..." : "Searching racing data..."}</div>}
             <div ref={endRef} />
           </div>
         )}
@@ -135,7 +143,7 @@ export default function Chancellor() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") send(); }}
-              placeholder="Ask about races, drivers, entries, or horse care..."
+              placeholder="Ask about races, entries, results, or horse care..."
               style={{ flex: 1, background: "transparent", border: "none", color: "#e8dcc8", fontSize: "15px", outline: "none", fontStyle: "italic" }}
             />
             <button onClick={() => send()} disabled={loading} style={{ background: "#c9a84c", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer", fontWeight: "bold" }}>
