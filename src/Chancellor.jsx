@@ -11,7 +11,8 @@ function useVoice() {
     window.speechSynthesis.cancel();
     setIsSpeaking(true);
     
-    const utterance = new SpeechSynthesisUtterance(text);
+    const cleanText = text.replace(/\*\*/g, '').replace(/##/g, '').replace(/:/g, ' - ').replace(/\*/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = 1.05;
     utterance.pitch = 1.05;
     utterance.volume = 1.0;
