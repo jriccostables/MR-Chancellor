@@ -12,8 +12,8 @@ function useVoice() {
     setIsSpeaking(true);
     
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95;
-    utterance.pitch = 0.76;
+    utterance.rate = 1.05;
+    utterance.pitch = 1.05;
     utterance.volume = 1.0;
     utterance.lang = "en-US";
     utterance.onend = () => setIsSpeaking(false);
