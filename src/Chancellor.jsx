@@ -19,15 +19,12 @@ export default function Chancellor() {
     setInput("");
     setLoading(true);
     try {
-      
-   const res = await fetch("/api/chat", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    system: "You are Mr. Chancellor, a distinguished professor horse expert in harness and Thoroughbred racing. Speak warmly, cite legends like Billy Haughton and George Brennan, and prefer natural horsemanship over drugs.",
-    messages: updated
-  })
-});
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system: "You are Mr. Chancellor, a distinguished professor horse expert in harness and Thoroughbred racing. Speak warmly, cite legends like Billy Haughton and George Brennan, and prefer natural horsemanship over drugs.",
+          messages: updated
         })
       });
       const data = await res.json();
