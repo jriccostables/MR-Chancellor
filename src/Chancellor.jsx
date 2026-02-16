@@ -99,7 +99,9 @@ export default function Chancellor() {
             <p style={{ color: "#8a7a5a", marginBottom: "30px", fontStyle: "italic" }}>Distinguished Professor of Equine Arts & Racing Sciences</p>
             {isSpeaking && <p style={{ color: "#c9a84c", marginBottom: "20px" }}>🔊 Speaking...</p>}
             <div style={{ display: "grid", gap: "10px", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
-              {["What tracks are racing tonight?", "Show me Yonkers entries", "Who won at Meadowlands last night?", "How do I spot lameness in my horse?"].map(q => (
+              {["Analyze this race card for me", "How do I rate a horse's mile?", "My horse is off - help me spot what's wrong", "What's the two-hole strategy at Yonkers?"].map(q => (
+
+
                 <button key={q} onClick={() => send(q)} style={{ background: "#2a2015", border: "1px solid #c9a84c", borderRadius: "8px", padding: "12px", color: "#c9a84c", cursor: "pointer", textAlign: "left", fontSize: "14px" }}>
                   {q}
                 </button>
