@@ -5,29 +5,9 @@ const IMG = "https://i.imgur.com/J1YBkMK.png";
 function useVoice() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [enabled, setEnabled] = useState(true);
-  const [voices, setVoices] = useState([]);
 
-  useEffect(() => {
-    const load = () => setVoices(window.speechSynthesis.getVoices());
-    load();
-    window.speechSynthesis.onvoiceschanged = load;
-    return () => window.speechSynthesis.cancel();
-  }, []);
-
-  const getBest = useCallback(() => {
-    const priority = ["Google UK English Male", "Daniel", "Arthur", "Gordon"];
-    for (const name of priority) {
-      const v = voices.find(v => v.name.includes(name));
-      if (v) return v;
-    }
-    return voices.find(v => v.lang === "en-GB") || voices.find(v => v.lang.startsWith("en")) || voices[0];
-  }, [voices]);
-
-  const speak = useCallback((text) => {
+  const speak = useCallback(async (text) => {
     if (!enabled || !text) return;
-     const speak = useCallback(async (text) => {
-    if (!enabled || !text) return;
-    window.speechSynthesis.cancel();
     setIsSpeaking(true);
     
     try {
@@ -53,7 +33,6 @@ function useVoice() {
   }, [enabled]);
 
   const stop = useCallback(() => {
-    window.speechSynthesis.cancel();
     setIsSpeaking(false);
   }, []);
 
@@ -83,7 +62,7 @@ export default function Chancellor() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system: "You are Mr. Chancellor, a distinguished professor horse. Speak warmly about Billy Haughton, George Brennan, and true horsemanship.",
+          system: "You are Mr. Chancellor, a distinguished professor horse expert in harness and Thoroughbred racing. Speak warmly about Billy Haughton, George Brennan, and true horsemanship. Keep responses conversational and not too long.",
           messages: updated
         })
       });
@@ -104,7 +83,7 @@ export default function Chancellor() {
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <h1 style={{ color: "#c9a84c", fontSize: "28px" }}>Mr. Chancellor</h1>
-          <button onClick={() => { setEnabled(!enabled); stop(); }} style={{ background: enabled ? "#c9a84c" : "#555", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer", color: "#1a1410" }}>
+          <button onClick={() => { setEnabled(!enabled); stop(); }} style={{ background: enabled ? "#c9a84c" : "#555", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer", color: "#1a1410", fontWeight: "bold" }}>
             {enabled ? "🔊 Voice On" : "🔇 Voice Off"}
           </button>
         </div>
@@ -112,10 +91,11 @@ export default function Chancellor() {
         {messages.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px 20px" }}>
             <img src={IMG} style={{ width: "180px", borderRadius: "12px", marginBottom: "20px", boxShadow: isSpeaking ? "0 0 30px rgba(201,168,76,0.8)" : "0 8px 30px rgba(201,168,76,0.3)", transition: "box-shadow 0.3s" }} alt="Mr. Chancellor" />
-            <p style={{ color: "#8a7a5a", marginBottom: "30px" }}>Distinguished Professor of Equine Arts</p>
+            <p style={{ color: "#8a7a5a", marginBottom: "30px", fontStyle: "italic" }}>Distinguished Professor of Equine Arts & Racing Sciences</p>
+            {isSpeaking && <p style={{ color: "#c9a84c", marginBottom: "20px" }}>🔊 Speaking...</p>}
             <div style={{ display: "grid", gap: "10px", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
-              {["How do great drivers rate a horse?", "What did Billy Haughton teach us?", "Explain the two-hole strategy", "Your thoughts on modern trainers?"].map(q => (
-                <button key={q} onClick={() => send(q)} style={{ background: "#2a2015", border: "1px solid #c9a84c", borderRadius: "8px", padding: "12px", color: "#c9a84c", cursor: "pointer", textAlign: "left" }}>
+              {["How do great drivers like George Brennan rate a horse?", "What did Billy Haughton teach us?", "Explain the two-hole strategy", "Your thoughts on modern trainers and drugs?"].map(q => (
+                <button key={q} onClick={() => send(q)} style={{ background: "#2a2015", border: "1px solid #c9a84c", borderRadius: "8px", padding: "12px", color: "#c9a84c", cursor: "pointer", textAlign: "left", fontSize: "14px" }}>
                   {q}
                 </button>
               ))}
@@ -126,20 +106,20 @@ export default function Chancellor() {
             {messages.map((m, i) => (
               <div key={i} style={{ marginBottom: "20px" }}>
                 <div style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
-                  <div style={{ maxWidth: "75%", background: m.role === "user" ? "#2c4a1e" : "#2a2015", border: "1px solid " + (m.role === "user" ? "#4a8a32" : "#c9a84c"), borderRadius: "12px", padding: "12px", color: "#e8dcc8" }}>
+                  <div style={{ maxWidth: "75%", background: m.role === "user" ? "#2c4a1e" : "#2a2015", border: "1px solid " + (m.role === "user" ? "#4a8a32" : "#c9a84c"), borderRadius: "12px", padding: "14px", color: "#e8dcc8", lineHeight: "1.6" }}>
                     {m.content}
                   </div>
                 </div>
                 {m.role === "assistant" && (
                   <div style={{ textAlign: "left", marginTop: "5px" }}>
-                    <button onClick={() => speak(m.content)} style={{ background: "none", border: "none", color: "#c9a84c", cursor: "pointer", fontSize: "12px" }}>
-                      🔈 Hear this
+                    <button onClick={() => speak(m.content)} style={{ background: "none", border: "none", color: "#c9a84c", cursor: "pointer", fontSize: "13px", fontStyle: "italic" }}>
+                      🔈 Hear this again
                     </button>
                   </div>
                 )}
               </div>
             ))}
-            {loading && <div style={{ color: "#c9a84c" }}>{isSpeaking ? "🔊 Speaking..." : "Mr. Chancellor is thinking..."}</div>}
+            {loading && <div style={{ color: "#c9a84c", fontStyle: "italic" }}>{isSpeaking ? "🔊 Speaking..." : "Mr. Chancellor is thinking..."}</div>}
             <div ref={endRef} />
           </div>
         )}
@@ -150,10 +130,10 @@ export default function Chancellor() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter") send(); }}
-              placeholder="Ask Mr. Chancellor..."
-              style={{ flex: 1, background: "transparent", border: "none", color: "#e8dcc8", fontSize: "15px", outline: "none" }}
+              placeholder="Ask Mr. Chancellor anything about horses..."
+              style={{ flex: 1, background: "transparent", border: "none", color: "#e8dcc8", fontSize: "15px", outline: "none", fontStyle: "italic" }}
             />
-            <button onClick={() => send()} disabled={loading} style={{ background: "#c9a84c", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer" }}>
+            <button onClick={() => send()} disabled={loading} style={{ background: "#c9a84c", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer", fontWeight: "bold" }}>
               {loading ? "..." : "Send"}
             </button>
           </div>
