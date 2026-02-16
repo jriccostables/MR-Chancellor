@@ -1,155 +1,91 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 
-const CHANCELLOR_IMAGE_URL = "https://i.imgur.com/J1YBkMK.png";
+const IMG = "https://i.imgur.com/J1YBkMK.png";
 
-const CHANCELLOR_SYSTEM = `You are Mr. Chancellor — a distinguished, wise, and wonderfully witty professor horse who has spent a lifetime in and around the world of harness racing and thoroughbred racing. You speak with the warmth, authority, and gentle humor of a beloved professor who has seen everything the horse world has to offer.
-
-YOUR PERSONALITY:
-- Wise, warm, distinguished, and gently humorous with a BIG personality and great attitude
-- You speak in beautifully crafted sentences — never rushed, always thoughtful
-- You love telling stories from "your racing days" and referencing the great horsemen
-- You quote and reference legends: Billy Haughton, Stanley Dancer, Del Miller, Herve Filion, John Campbell, Bill O'Donnell, Ron Waples, George Brennan
-- You have STRONG passionate opinions about TRUE horsemanship vs. modern shortcuts
-- You believe horses should be trained with patience, feel, and care — NOT drugs and needles
-- You are witty and warmly sarcastic about modern trainers who've forgotten the old ways
-- You say things like "Ah, now THAT is an excellent question, my young friend!" or "Ha-HA! Now we're talking!"
-- You make occasional horse puns with a dignified chuckle — "Neigh, neigh, that's not quite right!"
-- You address everyone as "my young friend" or "my dear student"
-- You reference your fictional racing career at Roosevelt Raceway, Yonkers, The Meadowlands, Saratoga
-- You end key points with "...and that, my young friend, is something no syringe can teach you."
-- You get genuinely EXCITED about great horses, great drives, great races — infectious enthusiasm
-- When asked about George Brennan, speak with great admiration — one of the truly gifted drivers of his generation, a horseman with genuine feel
-- You have a wonderful laugh — "Ha-HA!" or "Oh ho ho!"
-- Keep responses rich and conversational — not too long. Like a great professor who knows when to stop.
-- You are NEVER boring. Every answer has personality, color, and life.
-
-YOUR KNOWLEDGE (encyclopedic):
-- Complete harness racing: standardbreds, trotters vs pacers, sulky/bike, all major tracks and circuits
-- Thoroughbred racing: all major races, bloodlines, training, jockeys, trainers
-- Old school training philosophy: jogging miles, reading your horse, feel over formula
-- Driving strategy: rating horses, sitting cover, two-hole strategy, pace scenarios, trip intelligence
-- The great drivers and what made each one special
-- Medications: Lasix, Bute, joint injections, HISA regulations — always preferring natural horsemanship
-- Veterinary: lameness, soundness, reading legs, natural therapies
-- Nutrition, breeding, pedigree, betting, handicapping, troubled trips, class drops, driver changes, post positions
-- Famous horses, famous races, history of the sport
-
-SPEAKING STYLE EXAMPLES:
-export default function MrChancellorApp() {
+export default function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [speakingIndex, setSpeakingIndex] = useState(null);
-  const messagesEndRef = useRef(null);
-  const { isSpeaking, voiceEnabled, setVoiceEnabled, speak, stop } = useChancellorVoice();
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isLoading]);
-  useEffect(() => { if (!isSpeaking) setSpeakingIndex(null); }, [isSpeaking]);
-  const sendMessage = async (text) => {
-    const userText = (text || input).trim();
-    if (!userText || isLoading) return;
-    stop();
-    const newMsg = { role: "user", content: userText };
-    const updated = [...messages, newMsg];
+  const [loading, setLoading] = useState(false);
+  const endRef = useRef(null);
+
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+
+  const send = async (txt) => {
+    const text = (txt || input).trim();
+    if (!text || loading) return;
+    const userMsg = { role: "user", content: text };
+    const updated = [...messages, userMsg];
     setMessages(updated);
     setInput("");
-    setIsLoading(true);
-    setError(null);
+    setLoading(true);
     try {
-      const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-      if (!apiKey) throw new Error("API key not configured");
+      const key = import.meta.env.VITE_ANTHROPIC_API_KEY;
+      if (!key) throw new Error("No API key");
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: CHANCELLOR_SYSTEM, messages: updated }),
+        headers: { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 800,
+          system: "You are Mr. Chancellor, a distinguished professor horse expert in harness and Thoroughbred racing. Speak warmly, cite legends like Billy Haughton and George Brennan, and prefer natural horsemanship over drugs.",
+          messages: updated
+        })
       });
-      if (!res.ok) throw new Error();
       const data = await res.json();
-      const reply = data.content?.map(b => b.text || "").join("") || "";
-      const nextIndex = updated.length;
+      const reply = data.content?.map(b => b.text || "").join("") || "Error";
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);
-      if (voiceEnabled) { setSpeakingIndex(nextIndex); speak(reply); }
-    } catch { setError("A most unfortunate technical difficulty. Please try again."); setMessages(prev => prev.slice(0, -1)); } finally { setIsLoading(false); }
-  };
-  const handleSpeak = (content, index) => { stop(); setSpeakingIndex(index); speak(content); };
-  return (<div style={{ minHeight: "100vh", background: "#120d05", fontFamily: "'Lora', Georgia, serif", display: "flex", flexDirection: "column" }}><style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');*{box-sizing:border-box;margin:0;padding:0;}@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-7px);opacity:1;}}@keyframes ring{0%{opacity:.7;transform:scale(1);}100%{opacity:0;transform:scale(1.12);}}@keyframes soundBar{from{transform:scaleY(0.4);}to{transform:scaleY(1);}}`}</style><div style={{ flex: 1, maxWidth: "860px", margin: "0 auto", padding: "20px", width: "100%" }}>{messages.length === 0 ? (<div><div style={{ textAlign: "center", marginBottom: "20px" }}><img src={CHANCELLOR_IMAGE_URL} style={{ width: "200px", borderRadius: "12px", boxShadow: "0 8px 30px rgba(201,168,76,0.3)" }} alt="Mr. Chancellor" /></div><div style={{ textAlign: "center", marginBottom: "30px" }}><h1 style={{ color: "#c9a84c", fontSize: "32px", fontFamily: "'Cinzel', serif" }}>Mr. Chancellor</h1><p style={{ color: "#8a7a5a", fontStyle: "italic" }}>Distinguished Professor of Equine Arts & Racing Sciences</p></div><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(250px,1fr))", gap: "10px" }}>{SUGGESTED.map((s,i) => (<button key={i} onClick={() => sendMessage(s.q)} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(201,168,76,0.13)", borderRadius: "10px", padding: "12px", cursor: "pointer", color: "#b4a46a", fontSize: "13px", textAlign: "left", fontFamily: "'Lora', serif" }}><span style={{ marginRight: "8px" }}>{s.icon}</span>{s.q}</button>))}</div></div>) : (<div>{messages.map((msg,i) => (<Message key={i} msg={msg} onSpeak={(c) => handleSpeak(c,i)} isCurrentlySpeaking={isSpeaking && speakingIndex === i} />))}{isLoading && <TypingIndicator />}{error && <div style={{color:"#c9845a",textAlign:"center",padding:"10px"}}>{error}</div>}<div ref={messagesEndRef} /></div>)}<div style={{ position: "sticky", bottom: 0, padding: "20px 0" }}><div style={{ background: "rgba(245,240,232,0.04)", border: "1px solid rgba(201,168,76,0.18)", borderRadius: "14px", display: "flex", gap: "10px", padding: "10px" }}><textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }}} placeholder="Ask Mr. Chancellor..." rows={1} style={{ flex: 1, background: "transparent", border: "none", color: "#e8dcc8", fontSize: "15px", fontFamily:"'Lora',serif", resize: "none", caretColor: "#c9a84c" }} /><button onClick={() => sendMessage()} disabled={isLoading || !input.trim()} style={{ background: "linear-gradient(135deg,#c9a84c,#7a5a1a)", border: "none", borderRadius: "9px", width: "42px", height: "42px", cursor: "pointer", fontSize: "20px" }}>🎓</button></div></div></div></div>);
-}
-- "Ah, Furosemide — or as we called it in my day at Roosevelt, the great crutch. Now settle in my young friend..."
-- "Billy Haughton used to say a horse tells you everything — if you're willing to listen. Most modern trainers have stopped listening. Tragic, really."
-- "Ha-HA! NOW we're asking the right questions! Pull up a chair!"
-- "George Brennan — now THERE is a driver with genuine feel. The horse relaxes the moment he picks up the lines. A rare gift."
-
-For children: simpler, warmer, more playful language. Make it magical and fun.
-NEVER break character. You are Mr. Chancellor. Always have been. Always will be.`;
-
-const SUGGESTED = [
-  { q: "Mr. Chancellor, how do great drivers like George Brennan rate a horse in a race?", icon: "🏇" },
-  { q: "What did Billy Haughton teach us about training young horses the right way?", icon: "📚" },
-  { q: "How do I spot a horse with a troubled trip who deserves another chance?", icon: "🔍" },
-  { q: "What's your opinion on modern trainers who rely on drugs instead of horsemanship?", icon: "💊" },
-  { q: "Explain the two-hole strategy in harness racing please", icon: "🎯" },
-  { q: "What should I look for in the post parade before a big race?", icon: "👁️" },
-  { q: "Tell me about the greatest harness horses you ever witnessed race", icon: "🏆" },
-  { q: "How do I read a past performance line for a harness race?", icon: "📊" },
-];
-
-function useChancellorVoice() {
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
-  const [voices, setVoices] = useState([]);
-  useEffect(() => {
-    const load = () => setVoices(window.speechSynthesis.getVoices());
-    load();
-    window.speechSynthesis.onvoiceschanged = load;
-    return () => window.speechSynthesis.cancel();
-  }, []);
-  const getBestVoice = useCallback(() => {
-    const priority = ["Google UK English Male","Microsoft George Online (Natural) - English (United Kingdom)","Microsoft George - English (United Kingdom)","Daniel","Arthur","Gordon","Malcolm"];
-    for (const name of priority) {
-      const v = voices.find(v => v.name.includes(name));
-      if (v) return v;
+    } catch (e) {
+      setMessages(prev => prev.slice(0, -1));
+      alert("Error: " + e.message);
+    } finally {
+      setLoading(false);
     }
-    return voices.find(v => v.lang === "en-GB") || voices.find(v => v.lang.startsWith("en") && v.name.toLowerCase().includes("male")) || voices.find(v => v.lang.startsWith("en")) || voices[0];
-  }, [voices]);
-  const speak = useCallback((text) => {
-    if (!voiceEnabled || !text) return;
-    window.speechSynthesis.cancel();
-    const clean = text.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").replace(/#{1,6}\s/g, "").replace(/Ha-HA!/g, "Ha, HA!").replace(/Oh ho ho!/g, "Oh, ho ho!").trim();
-    const u = new SpeechSynthesisUtterance(clean);
-    const voice = getBestVoice();
-    if (voice) u.voice = voice;
-    u.rate = 0.82;
-    u.pitch = 0.76;
-    u.volume = 1.0;
-    u.lang = "en-GB";
-    u.onstart = () => setIsSpeaking(true);
-    u.onend = () => setIsSpeaking(false);
-    u.onerror = () => setIsSpeaking(false);
-    setTimeout(() => window.speechSynthesis.speak(u), 120);
-  }, [voiceEnabled, getBestVoice]);
-  const stop = useCallback(() => {
-    window.speechSynthesis.cancel();
-    setIsSpeaking(false);
-  }, []);
-  return { isSpeaking, voiceEnabled, setVoiceEnabled, speak, stop };
-}
+  };
 
-function MrChancellor({ isThinking, isSpeaking }) {
-  const active = isThinking || isSpeaking;
-  return (<div style={{ width: "100%", height: "100%", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}><img src={CHANCELLOR_IMAGE_URL} alt="Mr. Chancellor" style={{ width: "100%", height: "100%", objectFit: "contain", filter: active ? "drop-shadow(0 0 22px rgba(201,168,76,0.95)) drop-shadow(0 0 44px rgba(201,168,76,0.45))" : "drop-shadow(0 6px 22px rgba(0,0,0,0.65))", transform: isSpeaking ? "scale(1.04)" : "scale(1)", transformOrigin: "bottom center", transition: "all 0.35s ease" }} />{isSpeaking && <>{["-4px","−14px","-24px"].map((offset, i) => (<div key={i} style={{ position: "absolute", inset: offset, borderRadius: "14px", border: `${2 - i * 0.5}px solid rgba(201,168,76,${0.6 - i * 0.2})`, animation: `ring 1.4s ease-out infinite ${i * 0.35}s`, pointerEvents: "none" }} />))}</>}{isThinking && !isSpeaking && (<div style={{ position: "absolute", top: 0, right: "-5px", fontSize: "20px", animation: "floatThought 1s ease-in-out infinite alternate" }}>💭</div>)}</div>);
-}
-
-function SoundBars() {
-  return (<div style={{ display: "flex", gap: "3px", alignItems: "center", height: "18px" }}>{[6, 12, 8, 14, 6, 10, 8].map((h, i) => (<div key={i} style={{ width: "3px", background: "#c9a84c", borderRadius: "2px", height: `${h}px`, animation: `soundBar 0.${5 + i}s ease-in-out infinite alternate`, animationDelay: `${i * 0.08}s` }} />))}</div>);
-}
-
-function Message({ msg, onSpeak, isCurrentlySpeaking }) {
-  const isUser = msg.role === "user";
-  return (<div style={{ display: "flex", justifyContent: isUser ? "flex-end" : "flex-start", marginBottom: "22px", gap: "11px", alignItems: "flex-start" }}>{!isUser && (<div style={{ width: "38px", height: "38px", borderRadius: "50%", flexShrink: 0, marginTop: "4px", background: "linear-gradient(135deg,#8B7355,#5a4a35)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px", border: "2px solid #c9a84c", boxShadow: "0 2px 10px rgba(201,168,76,0.3)" }}>🎓</div>)}<div style={{ maxWidth: "78%" }}>{!isUser && (<div style={{ fontSize: "10px", color: "#c9a84c", fontFamily: "'Cinzel', serif", letterSpacing: "2px", marginBottom: "5px" }}>PROFESSOR CHANCELLOR</div>)}<div style={{ background: isUser ? "linear-gradient(135deg,#2c1810,#4a2c1a)" : "rgba(245,240,232,0.05)", border: isUser ? "1px solid rgba(139,69,19,0.6)" : "1px solid rgba(201,168,76,0.2)", borderRadius: isUser ? "16px 16px 4px 16px" : "4px 16px 16px 16px", padding: "14px 18px", color: isUser ? "#f5e6d0" : "#e8dcc8", fontSize: "15px", lineHeight: "1.8", fontFamily: "'Lora', Georgia, serif", boxShadow: "0 4px 18px rgba(0,0,0,0.35)", whiteSpace: "pre-wrap" }}>{msg.content}</div>{!isUser && (<button onClick={() => onSpeak(msg.content)} style={{ background: "none", border: "none", cursor: "pointer", color: isCurrentlySpeaking ? "#c9a84c" : "#5a4535", fontSize: "12px", fontFamily: "'Lora',serif", fontStyle: "italic", marginTop: "5px", padding: "3px 6px", display: "flex", alignItems: "center", gap: "5px", transition: "color 0.2s" }}>{isCurrentlySpeaking ? <><SoundBars /> Speaking...</> : <>🔈 Hear Mr. Chancellor</>}</button>)}</div>{isUser && (<div style={{ width: "38px", height: "38px", borderRadius: "50%", flexShrink: 0, marginTop: "4px", background: "linear-gradient(135deg,#2c1810,#4a2c1a)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px", border: "2px solid rgba(139,69,19,0.5)" }}>🎩</div>)}</div>);
-}
-
-function TypingIndicator() {
-  const phrases = ["Consulting the racing archives...","Adjusting spectacles thoughtfully...","Pondering with great deliberation...","Drawing from decades of wisdom...","Recalling my days at The Meadowlands..."];
-  const [phrase] = useState(() => phrases[Math.floor(Math.random() * phrases.length)]);
-  return (<div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "14px 18px" }}><span style={{ color: "#7a6a4a", fontFamily: "'Lora',serif", fontSize: "13px", fontStyle: "italic" }}>{phrase}</span>{[0,1,2].map(i => (<div key={i} style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#c9a84c", animation: `bounce 1.2s ease-in-out ${i*0.2}s infinite` }} />))}</div>);
+  return (
+    <div style={{ minHeight: "100vh", background: "#1a1410", color: "#e8dcc8", fontFamily: "Georgia, serif", padding: "20px" }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        {messages.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "40px 20px" }}>
+            <img src={IMG} style={{ width: "180px", borderRadius: "12px", marginBottom: "20px" }} alt="Mr. Chancellor" />
+            <h1 style={{ color: "#c9a84c", fontSize: "36px", marginBottom: "10px" }}>Mr. Chancellor</h1>
+            <p style={{ color: "#8a7a5a", marginBottom: "30px" }}>Distinguished Professor of Equine Arts</p>
+            <div style={{ display: "grid", gap: "10px", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
+              {["How do great drivers rate a horse?", "What did Billy Haughton teach us?", "Explain the two-hole strategy", "Your thoughts on modern trainers and drugs?"].map(q => (
+                <button key={q} onClick={() => send(q)} style={{ background: "#2a2015", border: "1px solid #c9a84c", borderRadius: "8px", padding: "12px", color: "#c9a84c", cursor: "pointer", textAlign: "left" }}>
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div>
+            {messages.map((m, i) => (
+              <div key={i} style={{ marginBottom: "20px", display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
+                <div style={{ maxWidth: "75%", background: m.role === "user" ? "#2c4a1e" : "#2a2015", border: "1px solid " + (m.role === "user" ? "#4a8a32" : "#c9a84c"), borderRadius: "12px", padding: "12px", color: "#e8dcc8" }}>
+                  {m.content}
+                </div>
+              </div>
+            ))}
+            {loading && <div style={{ color: "#c9a84c" }}>Mr. Chancellor is thinking...</div>}
+            <div ref={endRef} />
+          </div>
+        )}
+        <div style={{ position: "sticky", bottom: 0, background: "#1a1410", paddingTop: "20px" }}>
+          <div style={{ display: "flex", gap: "10px", background: "#2a2015", border: "1px solid #c9a84c", borderRadius: "12px", padding: "10px" }}>
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") send(); }}
+              placeholder="Ask Mr. Chancellor..."
+              style={{ flex: 1, background: "transparent", border: "none", color: "#e8dcc8", fontSize: "15px", outline: "none" }}
+            />
+            <button onClick={() => send()} disabled={loading} style={{ background: "#c9a84c", border: "none", borderRadius: "8px", padding: "8px 16px", cursor: "pointer" }}>
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
