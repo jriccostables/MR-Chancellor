@@ -35,6 +35,45 @@ YOUR KNOWLEDGE (encyclopedic):
 - Famous horses, famous races, history of the sport
 
 SPEAKING STYLE EXAMPLES:
+export default function MrChancellorApp() {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [speakingIndex, setSpeakingIndex] = useState(null);
+  const messagesEndRef = useRef(null);
+  const { isSpeaking, voiceEnabled, setVoiceEnabled, speak, stop } = useChancellorVoice();
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isLoading]);
+  useEffect(() => { if (!isSpeaking) setSpeakingIndex(null); }, [isSpeaking]);
+  const sendMessage = async (text) => {
+    const userText = (text || input).trim();
+    if (!userText || isLoading) return;
+    stop();
+    const newMsg = { role: "user", content: userText };
+    const updated = [...messages, newMsg];
+    setMessages(updated);
+    setInput("");
+    setIsLoading(true);
+    setError(null);
+    try {
+      const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+      if (!apiKey) throw new Error("API key not configured");
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: CHANCELLOR_SYSTEM, messages: updated }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const reply = data.content?.map(b => b.text || "").join("") || "";
+      const nextIndex = updated.length;
+      setMessages(prev => [...prev, { role: "assistant", content: reply }]);
+      if (voiceEnabled) { setSpeakingIndex(nextIndex); speak(reply); }
+    } catch { setError("A most unfortunate technical difficulty. Please try again."); setMessages(prev => prev.slice(0, -1)); } finally { setIsLoading(false); }
+  };
+  const handleSpeak = (content, index) => { stop(); setSpeakingIndex(index); speak(content); };
+  return (<div style={{ minHeight: "100vh", background: "#120d05", fontFamily: "'Lora', Georgia, serif", display: "flex", flexDirection: "column" }}><style>{`@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');*{box-sizing:border-box;margin:0;padding:0;}@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-7px);opacity:1;}}@keyframes ring{0%{opacity:.7;transform:scale(1);}100%{opacity:0;transform:scale(1.12);}}@keyframes soundBar{from{transform:scaleY(0.4);}to{transform:scaleY(1);}}`}</style><div style={{ flex: 1, maxWidth: "860px", margin: "0 auto", padding: "20px", width: "100%" }}>{messages.length === 0 ? (<div><div style={{ textAlign: "center", marginBottom: "20px" }}><img src={CHANCELLOR_IMAGE_URL} style={{ width: "200px", borderRadius: "12px", boxShadow: "0 8px 30px rgba(201,168,76,0.3)" }} alt="Mr. Chancellor" /></div><div style={{ textAlign: "center", marginBottom: "30px" }}><h1 style={{ color: "#c9a84c", fontSize: "32px", fontFamily: "'Cinzel', serif" }}>Mr. Chancellor</h1><p style={{ color: "#8a7a5a", fontStyle: "italic" }}>Distinguished Professor of Equine Arts & Racing Sciences</p></div><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(250px,1fr))", gap: "10px" }}>{SUGGESTED.map((s,i) => (<button key={i} onClick={() => sendMessage(s.q)} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(201,168,76,0.13)", borderRadius: "10px", padding: "12px", cursor: "pointer", color: "#b4a46a", fontSize: "13px", textAlign: "left", fontFamily: "'Lora', serif" }}><span style={{ marginRight: "8px" }}>{s.icon}</span>{s.q}</button>))}</div></div>) : (<div>{messages.map((msg,i) => (<Message key={i} msg={msg} onSpeak={(c) => handleSpeak(c,i)} isCurrentlySpeaking={isSpeaking && speakingIndex === i} />))}{isLoading && <TypingIndicator />}{error && <div style={{color:"#c9845a",textAlign:"center",padding:"10px"}}>{error}</div>}<div ref={messagesEndRef} /></div>)}<div style={{ position: "sticky", bottom: 0, padding: "20px 0" }}><div style={{ background: "rgba(245,240,232,0.04)", border: "1px solid rgba(201,168,76,0.18)", borderRadius: "14px", display: "flex", gap: "10px", padding: "10px" }}><textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }}} placeholder="Ask Mr. Chancellor..." rows={1} style={{ flex: 1, background: "transparent", border: "none", color: "#e8dcc8", fontSize: "15px", fontFamily:"'Lora',serif", resize: "none", caretColor: "#c9a84c" }} /><button onClick={() => sendMessage()} disabled={isLoading || !input.trim()} style={{ background: "linear-gradient(135deg,#c9a84c,#7a5a1a)", border: "none", borderRadius: "9px", width: "42px", height: "42px", cursor: "pointer", fontSize: "20px" }}>🎓</button></div></div></div></div>);
+}
 - "Ah, Furosemide — or as we called it in my day at Roosevelt, the great crutch. Now settle in my young friend..."
 - "Billy Haughton used to say a horse tells you everything — if you're willing to listen. Most modern trainers have stopped listening. Tragic, really."
 - "Ha-HA! NOW we're asking the right questions! Pull up a chair!"
