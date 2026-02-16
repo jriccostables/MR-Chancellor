@@ -1,4 +1,12 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+YES! Smart move. Here's the COMPLETE working Chancellor.jsx with simple browser voice:
+
+
+Go to src/Chancellor.jsx
+Click pencil to edit
+Delete EVERYTHING
+Paste this:
+
+javascriptimport { useState, useRef, useEffect, useCallback } from "react";
 
 const IMG = "https://i.imgur.com/J1YBkMK.png";
 
@@ -6,33 +14,26 @@ function useVoice() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [enabled, setEnabled] = useState(true);
 
-  const speak = useCallback(async (text) => {
+  const speak = useCallback((text) => {
     if (!enabled || !text) return;
+    window.speechSynthesis.cancel();
     setIsSpeaking(true);
     
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          getVoice: true,
-          text: text
-        })
-      });
-      
-      const audioBlob = await res.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      audio.onended = () => setIsSpeaking(false);
-      audio.onerror = () => setIsSpeaking(false);
-      audio.play();
-    } catch (e) {
-      setIsSpeaking(false);
-      console.error("Voice error:", e);
-    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.82;
+    utterance.pitch = 0.76;
+    utterance.volume = 1.0;
+    utterance.lang = "en-GB";
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+    }, 100);
   }, [enabled]);
 
   const stop = useCallback(() => {
+    window.speechSynthesis.cancel();
     setIsSpeaking(false);
   }, []);
 
