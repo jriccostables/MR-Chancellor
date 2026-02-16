@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     const elevenKey = process.env.ELEVENLABS_API_KEY;
     
     try {
-      const voiceId = 'pNInz6obpgDQGcFmaJgB'; // Adam - distinguished British voice
+      const voiceId = 'pNInz6obpgDQGcFmaJgB';
       const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
         method: 'POST',
         headers: {
