@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './Chancellor.jsx'
+import Chancellor from './Chancellor.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <Chancellor />
   </React.StrictMode>,
 )
