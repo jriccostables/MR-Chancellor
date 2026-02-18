@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     }
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.VITE_ANTHROPIC_API_KEY;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
