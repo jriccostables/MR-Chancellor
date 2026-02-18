@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   if (getVoice && text) {
     const elevenKey = process.env.ELEVENLABS_API_KEY;
     try {
-      const voiceId = 'pNInz6obpgDQGcFmaJgB';
+      const voiceId = AKvWoJqSJof60xDVs07I';
       const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
         method: 'POST',
         headers: {
