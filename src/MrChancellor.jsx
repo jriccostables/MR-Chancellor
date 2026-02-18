@@ -6,7 +6,7 @@ function useVoice() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [enabled, setEnabled] = useState(true);
 
-const speak = useCallback((text) => {
+  const speak = useCallback((text) => {
     if (!enabled || !text) return;
     window.speechSynthesis.cancel();
     setIsSpeaking(true);
@@ -27,6 +27,7 @@ const speak = useCallback((text) => {
   }, [enabled]);
 
   const stop = useCallback(() => {
+    window.speechSynthesis.cancel();
     setIsSpeaking(false);
   }, []);
 
@@ -108,7 +109,7 @@ export default function Chancellor() {
             <div style={{flex:1,minWidth:"260px",background:"rgba(245,240,232,0.04)",border:"1px solid rgba(201,168,76,0.25)",borderRadius:"4px 24px 24px 24px",padding:"24px 28px",position:"relative",boxShadow:"0 10px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(201,168,76,0.08)"}}>
               <div style={{position:"absolute",left:"-14px",top:"28px",width:0,height:0,borderTop:"10px solid transparent",borderBottom:"10px solid transparent",borderRight:"14px solid rgba(201,168,76,0.25)"}}/>
               <div style={{fontSize:"10px",color:"#c9a84c",fontFamily:"'Cinzel', serif",letterSpacing:"2px",marginBottom:"12px"}}>THE PROFESSOR SPEAKS</div>
-              <p style={{color:"#1a0f08 ",fontSize:"15px",lineHeight:"1.9",fontStyle:"italic",marginBottom:"12px"}}>"Ah, welcome! I am Mr. Chancellor — professor, philosopher, and former harness horse of considerable distinction. Whether you seek to analyze race cards, master driving tactics, or learn true horsemanship from the ground up, you've come to the right place."</p>
+              <p style={{color:"#e8dcc8",fontSize:"15px",lineHeight:"1.9",fontStyle:"italic",marginBottom:"12px"}}>"Ah, welcome! I am Mr. Chancellor — professor, philosopher, and former harness horse of considerable distinction. Whether you seek to analyze race cards, master driving tactics, or learn true horsemanship from the ground up, you've come to the right place."</p>
               <div style={{marginTop:"16px",display:"flex",alignItems:"center",gap:"12px"}}>
                 <div style={{height:"1px",flex:1,background:"rgba(201,168,76,0.2)"}}/>
                 <span style={{color:"#c9a84c",fontSize:"12px",fontStyle:"italic"}}>— Mr. Chancellor, Esq.</span>
