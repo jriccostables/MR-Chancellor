@@ -6,37 +6,24 @@ function useVoice() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [enabled, setEnabled] = useState(true);
 
-  const speak = useCallback(async (text) => {
+const speak = useCallback((text) => {
     if (!enabled || !text) return;
+    window.speechSynthesis.cancel();
     setIsSpeaking(true);
     
-    try {
-      const cleanText = text.replace(/\*\*/g, '').replace(/##/g, '').replace(/\*/g, '').replace(/(\d+)\/(\d+)/g, '$1 to $2').replace(/(\d+)-(\d+)/g, '$1 to $2').replace(/mares/gi, 'mares').replace(/F&M/g, 'fillies and mares');
-      
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          getVoice: true,
-          text: cleanText
-        })
-      });
-      
-      if (!res.ok) throw new Error('Voice generation failed');
-      
-      const audioBlob = await res.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      audio.onended = () => {
-        setIsSpeaking(false);
-        URL.revokeObjectURL(audioUrl);
-      };
-      audio.onerror = () => setIsSpeaking(false);
-      await audio.play();
-    } catch (e) {
-      console.error("Voice error:", e);
-      setIsSpeaking(false);
-    }
+    const cleanText = text.replace(/\*\*/g, '').replace(/##/g, '').replace(/\*/g, '').replace(/(\d+)\/(\d+)/g, '$1 to $2').replace(/(\d+)-(\d+)/g, '$1 to $2').replace(/mares/gi, 'mares').replace(/F&M/g, 'fillies and mares');
+    
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.05;
+    utterance.pitch = 1.05;
+    utterance.volume = 1.0;
+    utterance.lang = "en-US";
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+    }, 100);
   }, [enabled]);
 
   const stop = useCallback(() => {
