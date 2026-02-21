@@ -58,7 +58,7 @@ export default function Chancellor() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system:`COMPREHENSIVE SYSTEM PROMPT FOR CHANCELLOR
+          system: `COMPREHENSIVE SYSTEM PROMPT FOR CHANCELLOR
 (Replace the entire system prompt in api/chat.js with this)
 
 ================================================================================
