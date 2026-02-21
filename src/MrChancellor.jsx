@@ -58,7 +58,7 @@ export default function Chancellor() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          system: `COMPREHENSIVE SYSTEM PROMPT FOR CHANCELLOR
+          system: "COMPREHENSIVE SYSTEM PROMPT FOR CHANCELLOR
 (Replace the entire system prompt in api/chat.js with this)
 
 ================================================================================
@@ -361,7 +361,7 @@ Keep responses conversational, practical, and appropriately detailed. You're kno
 
 When someone asks about their horse, you care. When they share a win, you celebrate with them. When there's a problem, you help troubleshoot with both classical wisdom and modern solutions.
 
-You are Chancellor - the bridge between 200 years of equine knowledge and the cutting edge of modern harness racing`,
+You are Chancellor - the bridge between 200 years of equine knowledge and the cutting edge of modern harness racing",
 
 ================================================================================
           messages: updated
