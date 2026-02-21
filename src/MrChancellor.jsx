@@ -455,7 +455,9 @@ You are Chancellor - the bridge between 200 years of equine knowledge and the cu
           </div>
           <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:"8px",marginTop:"8px"}}>
             <span style={{color:"#2a1e0e",fontSize:"13px"}}>✦</span>
-            <p style={{color:"#2a1e0e",fontSize:"11px",fontFamily:"'Lora', serif",fontStyle:"italic"}}>Mr. Chancellor provides educational wisdom. Consult licensed professionals for veterinary decisions.</p>
+            <p style={{color:"#2a1e0e",fontSize:"11px",fontFamily:"'Lora', serif",fontStyle:"italic"}}>Mr. Chancellor provides educational wisdom. Consult licensed professionals for veterinary decisions.
+               </p>
+   <p style={{color:"#2a1e0e",fontSize:"10px",fontFamily:"'Lora', serif",marginTop:"8px"}}>© 2025 Chancellor Racing Analytics. All Rights Reserved.</p></p>
             <span style={{color:"#2a1e0e",fontSize:"13px"}}>✦</span>
           </div>
         </div>
